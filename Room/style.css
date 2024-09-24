@@ -1,0 +1,186 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+body {
+  background-color: #0d0d0d;
+  /* Dark background for sinister vibe */
+  color: #f2f2f2;
+  /* Light text for contrast */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+nav {
+  background-color: #1a1a1a;
+  /* Darker navbar */
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+}
+
+nav .logo a {
+  color: #ff005a;
+  /* Bright, playful pink for the logo */
+  font-size: 28px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+}
+
+nav ul li {
+  margin-left: 1.5rem;
+}
+
+nav ul li a {
+  color: #f2f2f2;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+nav ul li a:hover {
+  background-color: #ff005a;
+  /* Playful hover effect */
+  border-radius: 4px;
+}
+
+.container {
+  background-color: #262626;
+  /* Dark container background */
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(255, 0, 90, 0.3);
+  /* Glowing shadow for playful touch */
+  max-width: 400px;
+  width: 100%;
+  margin-top: 120px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 1.5rem;
+  color: #ff005a;
+  /* Bright heading for contrast */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #f2f2f2;
+}
+
+input {
+  padding: 0.75rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #ff005a;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #1a1a1a;
+  color: #f2f2f2;
+}
+
+input:focus {
+  border-color: #ff8800;
+  /* Bright orange for a fun contrast */
+  outline: none;
+}
+
+button {
+  padding: 0.75rem;
+  background-color: #ff005a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+  background-color: #ff8800;
+  transform: translateY(-2px);
+  /* Slight bounce on hover */
+}
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav ul li {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .container {
+    padding: 1.5rem;
+    margin-top: 100px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  input,
+  button {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  nav {
+    flex-direction: column;
+    padding: 0.75rem;
+  }
+
+  nav .logo a {
+    font-size: 24px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  nav ul li {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  input,
+  button {
+    font-size: 14px;
+  }
+}

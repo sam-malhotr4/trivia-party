@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <nav>
+    <div class="logo">
+      <a href="/Home/home.html" >👾 Trivia-Party</a>
+    </div>
+    <ul>
+      <li><a href="/Home/home.html">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>Welcome Back to the Fun!</h1>
+    <form action="/login" method="POST">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+      <button type="submit">Login</button>
+      <p class="message">Not registered? <a href="registration.html">Create an account</a></p>
+      <p class="message"><a href="/Room/room.html" >Continue without Login</a></p>
+    </form>
+  </div>
+</body>
+
+</html>
