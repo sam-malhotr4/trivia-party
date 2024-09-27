@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Round - Trivia Party</title>
+    <link rel="stylesheet" href="/trivia-party/Assignment-1/css/finalround_style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="home.html">👾 Trivia-Party</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="home.html">Home</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Racing Area -->
+    <div class="race-container">
+        <h2>Final Round: Player Race!</h2>
+        
+        <!-- Player race tracks -->
+        <div class="race-track" id="player1-track">
+            <div class="player-icon" id="player1-icon" title="Player 1: 10pts"></div>
+            <span class="player-name">Player 1</span>
+        </div>
+
+        <div class="race-track" id="player2-track">
+            <div class="player-icon" id="player2-icon" title="Player 2: 15pts"></div>
+            <span class="player-name">Player 2</span>
+        </div>
+
+        <div class="race-track" id="player3-track">
+            <div class="player-icon" id="player3-icon" title="Player 3: 8pts"></div>
+            <span class="player-name">Player 3</span>
+        </div>
+
+        <div class="race-track" id="player4-track">
+            <div class="player-icon" id="player4-icon" title="Player 4: 12pts"></div>
+            <span class="player-name">Player 4</span>
+        </div>
+    </div>
+
+    <!-- Race Start Button -->
+    <div class="race-start">
+        <button id="startRace">Start Race</button>
+    </div>
+
+    <script>
+        // Simple JavaScript to start the race animation
+        document.getElementById('startRace').addEventListener('click', function() {
+            // Add class to initiate the race animation
+            document.getElementById('player1-icon').classList.add('race');
+            document.getElementById('player2-icon').classList.add('race');
+            document.getElementById('player3-icon').classList.add('race');
+            document.getElementById('player4-icon').classList.add('race');
+        });
+    </script>
+</body>
+</html>
