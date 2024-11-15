@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Game</title>
+  <link rel="stylesheet" href="./css/game_style.css">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <a href="home.html">👾 Trivia-Party</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+  <div class="container">
+    <!-- Question and options box -->
+    <div class="question-box">
+      <div class="question">
+        <h2 id="question-text">Loading question...</h2>
+      </div>
+      <div class="options">
+        <div class="option" data-value="A" onclick="selectOption(this)" >A) <span id="option-a">Loading...</span></div>
+        <div class="option" data-value="B" onclick="selectOption(this)" >B) <span id="option-b">Loading...</span></div>
+        <div class="option" data-value="C" onclick="selectOption(this)" >C) <span id="option-c">Loading...</span></div>
+        <div class="option" data-value="D" onclick="selectOption(this)" >D) <span id="option-d">Loading...</span></div>
+      </div>
+      <!-- Submit button -->
+      <!-- <button id="submit-btn" onclick="submitAnswer()">Submit</button>
+    </div> -->
+
+    <!-- Timer -->
+    <div class="timer">
+      <div class="countdown">5s</div>
+    </div>
+
+    <!-- Player count box -->
+    <div class="player-box">
+      <div id="result" class="result"></div>
+    </div>
+        <div class="player-box">
+          <div class="player-icon" title="Player 1: 10pts">P1</div>
+          <div class="player-icon" title="Player 2: 15pts">P2</div>
+          <div class="player-icon" title="Player 3: 8pts">P3</div>
+        </div>
+  </div>
+
+  <script src="./js/game_logic.js"></script>
+  
+</body>
+
+</html>
