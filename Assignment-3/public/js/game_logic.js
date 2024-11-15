@@ -20,7 +20,7 @@ async function fetchQuestion() {
             },
         });
 
-        console.log("auth",token)
+        console.log("auth token :",token)
         if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText);
         }

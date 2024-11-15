@@ -1,99 +1,92 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Assignment-3:
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+In the Question-Answers API, we implemented authentication and authorization to ensure secure access and proper role management. Authentication is handled using JSON Web Tokens (JWT), where users log in and receive a token containing their details, such as username, user ID, and roles. This token is stored on the client-side and sent with each API request to prove the user’s identity.
+On the backend, the token is validated through a guard, ensuring that only authenticated users can access the API. 
+ 
+ Authorization is managed through roles, which are embedded in the token when it is generated. Each user is assigned specific roles, such as user or admin, which define what they are allowed to do. 
+ For example, regular users can fetch and answer questions, while admin users have additional privileges, like managing questions. The roles are checked using a RolesGuard to ensure only users with the right permissions can access restricted routes. 
+ 
+ Together, authentication and role-based authorization create a secure system where each user’s actions are restricted to what they are authorized to perform, protecting sensitive functionalities and maintaining the integrity of the API.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+In order to test these API:
+ 1.Use Postman to cheak endpoints
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+ Example:
+ 1.Register on the registertion page
+ 2.Login using the same credentials
+ 
 
-## Project setup
+ After Login a Token will be generated (can be cheaked in the developer tools in the browser). copy the same and add it to the Auth tab in the postman.
 
-```bash
-$ npm install
-```
+ after adding use method GET and paste the Endpoint(http://localhost:3001/questions/random) if the token is correct the information will be fetched and give status code 200 
+ Example:
+ {
+    "_id": "671fc275e5d854174d3733aa",
+    "question": "What is the smallest country in the world?",
+    "options": [
+        "Monaco",
+        "Malta",
+        "Vatican City",
+        "San Marino"
+    ],
+    "correctAnswer": "Vatican City"
+ }
 
-## Compile and run the project
+ if not it'll give: status code:401
 
-```bash
-# development
-$ npm run start
+ {
+    "message": "Unauthorized",
+    "statusCode": 401
+}
 
-# watch mode
-$ npm run start:dev
+Same way we can cheak the Answer api:
+just change the method to POST (http://localhost:3001/answers)
 
-# production mode
-$ npm run start:prod
-```
+add the token
 
-## Run tests
+In the body tag:
+{
+  "questionId": "671fc275e5d854174d3733c0",
+  "selectedOption": "nile"
+}
 
-```bash
-# unit tests
-$ npm run test
+It'll give the result:
+{
+    "result": "win"
+}
+If the token is correct else ill give
 
-# e2e tests
-$ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
-```
+ {
+    "message": "Unauthorized",
+    "statusCode": 401
+}
 
-## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+ROLES: For now we have implemented two Roles ie Admin and User
+Both User and admin  can fetch the question API.
+Only admin can add question
+For testing purpose added a admin only endpoint which can be cheaked using Postman
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Login as admin : In this case
+{
+  "username":"adminuser",
+  "password":"adminpassword"
+}
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+Choose method as GET (http://localhost:3001/questions/admin-only)
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+It'll generate a token which will be different from the token of user.
+add it in the auth tab
 
-## Resources
+if everything is correct: 200 OK
+{
+    "message": "This is an admin-only endpoint"
+}
+else 
+{
+    "message": "Unauthorized",
+    "statusCode": 401
+}
 
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
