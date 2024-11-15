@@ -10,7 +10,7 @@ import { Roles } from '../auth/roles.decorator';
 @UseGuards(JwtAuthGuard, RolesGuard) 
 export class AnswersController {
   constructor(private readonly answersService: AnswersService) { }
- 
+  @Roles("user","admin")
   @Post()
   async submitAnswer(@Body() answerDto: AnswerDto) {
     return this.answersService.checkAnswer(answerDto);
