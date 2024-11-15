@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Game Room</title>
+  <link rel="stylesheet" href="./css/room_style.css">
+</head>
+
+<body>
+  <nav>
+    <div class="logo">
+      <a href="home.html">👾 Trivia-Party</a>
+    </div>
+    <ul>
+      <li><a href="home.html">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="Login.html">Login</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>Join the Trivia-Party</h1>
+    <form action="/join-room" method="POST">
+      <label for="room-code">Room Code</label>
+      <input type="text" id="room-code" name="roomCode" placeholder="Enter room code" required>
+
+      <label for="player-name">Player Name</label>
+      <input type="text" id="player-name" name="playerName" placeholder="Enter your sinister alias" required>
+
+      <button type="submit">Join Room</button><br>
+      <p><a href="index.html">Create Room</a></p>
+    </form>
+  </div>
+</body>
+
+</html>
