@@ -12,14 +12,14 @@ export class QuestionsController {
 
   @Get('random')
   
-  @Roles('user', 'admin') 
+  @Roles('user', 'admin') //both user and admin cna fetch questions
   getRandomQuestion() {
     console.log("fetching a random question")
     return this.questionsService.getRandomQuestion();
   }
 
-  @Post('add')
-  @Roles('admin')
+  @Post('add') 
+  @Roles('admin') //only admin can add question
   addQuestion(@Body() questionData: { question: string; options: string[]; correctAnswer: string }) {
     return this.questionsService.addQuestion(questionData);
   }

@@ -7,3 +7,6 @@ On the backend, the token is validated through a guard, ensuring that only authe
  For example, regular users can fetch and answer questions, while admin users have additional privileges, like managing questions. The roles are checked using a RolesGuard to ensure only users with the right permissions can access restricted routes. 
  
  Together, authentication and role-based authorization create a secure system where each user’s actions are restricted to what they are authorized to perform, protecting sensitive functionalities and maintaining the integrity of the API.
+
+
+ 
