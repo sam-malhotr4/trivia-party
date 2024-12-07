@@ -1,0 +1,10 @@
+{
+  "name": "Assignment-4",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm run dev --prefix Client\" \"npm run start --prefix Server\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  }
+}

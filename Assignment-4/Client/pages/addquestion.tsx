@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { useState, useEffect, FormEvent } from 'react';
 
 const AddQuestion: React.FC = () => {
@@ -145,7 +146,11 @@ const AddQuestion: React.FC = () => {
           } text-white transition-colors`}
         >
           {isSubmitting ? 'Submitting...' : 'Add Question'}
-        </button>
+        </button><br />
+        <br />
+        <Link href="/room">
+      <button  className="w-full py-3 font-bold rounded-lg bg-red-500 hover:bg-red-600" >Back to Room</button>
+      </Link>
       </form>
     </div>
   );
