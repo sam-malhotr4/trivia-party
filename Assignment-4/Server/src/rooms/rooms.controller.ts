@@ -11,6 +11,7 @@ export class RoomsController {
 
     @Post('create_room') //maps to /rooms/create-room
     async createRoom(@Body('username') username: string): Promise<Room> {
+        console.log('Username: ', username);
         return this.roomsService.createRoom(username); 
         // const room = await this.roomsService.createRoom(user);
 

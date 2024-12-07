@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { UsersModule } from "src/users/users.module";
+import { UsersModule } from "../users/users.module";
 import { MongooseModule } from "@nestjs/mongoose";
 import { RoomsController } from "./rooms.controller";
 import { RoomsService } from "./rooms.service";
