@@ -5,6 +5,13 @@ import { User } from "../users/user.schema";
 import { Room } from './rooms.model';
 import { Player } from "./player.interface";
 
+export interface LeaveRoomResponse {
+    message: string;
+    roomCode?: string;
+    players?: string[];
+}
+
+
 @Injectable()
 export class RoomsService{
     constructor(
@@ -20,7 +27,8 @@ export class RoomsService{
 
     // create a new room
     async createRoom(username: string): Promise<Room>{
-        const user = await this.userModel.findById(username).exec();
+        const user = await this.userModel.findOne({username}).exec();
+        console.log("User found:", user);
         if (!user) {
             throw new NotFoundException('User not found');
         }
@@ -74,7 +82,9 @@ export class RoomsService{
         .exec();
     }
 
-    async leaveRoom(username: string): Promise<Room | null> {
+    // async leaveRoom(username: string): Promise<Room | null> {
+    // async leaveRoom(username: string): Promise<{ message: string; roomCode?: string; players?: string[] }> {
+    async leaveRoom(username: string): Promise<LeaveRoomResponse> {
         const user = await this.userModel.findOne({ username }).exec();
         if (!user) {
             throw new NotFoundException('User not found');
@@ -93,14 +103,18 @@ export class RoomsService{
         if (room.host.user.toString() === user._id.toString()) {
             // Delete the room if the user is the host
             await this.roomModel.deleteOne({ _id: room._id }).exec();
-            return null; // Return null to indicate the room is deleted
+            return { message: 'Host left the room successfully. Room disbanded.' }; // Return message to indicate the room is deleted since host left
         }
-    
+
         // Remove the user from the players array
-        room.players = room.players.filter(player => player.user._id.toString() !== user._id.toString());
+        room.players = room.players.filter(player => (player.user as User)._id.toString() !== user._id.toString());
     
         await room.save();
-        return room;
+        return {
+            message: 'Left room successfully',
+            roomCode: room.roomCode,
+            players: room.players.map(player => player.user.username),
+        };
     }
 
     // async getRoomWithPlayers(roomCode: string): Promise<Room | null> {
