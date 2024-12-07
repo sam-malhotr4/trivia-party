@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
-import Layout from '../components/layout';
-export default function Register() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+import Layout from '../components/Layout';
+
+const Register: React.FC = () => {
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleRegister = async (event) => {
+  // Handle Registration
+  const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const lowerCaseUsername = username.toLowerCase();
@@ -24,7 +26,11 @@ export default function Register() {
       const response = await fetch('http://localhost:3001/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({
+          username: lowerCaseUsername,
+          email: lowerCaseEmail,
+          password,
+        }),
       });
 
       const data = await response.json();
@@ -68,6 +74,7 @@ export default function Register() {
                 className="w-full p-3 border border-red-500 rounded-lg bg-gray-800 text-gray-200"
               />
             </div>
+
             <div>
               <label
                 htmlFor="email"
@@ -85,6 +92,7 @@ export default function Register() {
                 className="w-full p-3 border border-red-500 rounded-lg bg-gray-800 text-gray-200"
               />
             </div>
+
             <div>
               <label
                 htmlFor="password"
@@ -102,12 +110,14 @@ export default function Register() {
                 className="w-full p-3 border border-red-500 rounded-lg bg-gray-800 text-gray-200"
               />
             </div>
+
             <button
               type="submit"
               className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg"
             >
               Register
             </button>
+
             <p className="message text-center mt-4">
               Already registered?{' '}
               <a
@@ -120,7 +130,9 @@ export default function Register() {
           </form>
         </div>
       </div>
-      <Layout/>
+      <Layout />
     </>
   );
-}
+};
+
+export default Register;

@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 
+const AddQuestion: React.FC = () => {
+  const [question, setQuestion] = useState<string>('');
+  const [options, setOptions] = useState<string[]>(['', '', '', '']);
+  const [correctAnswer, setCorrectAnswer] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-const AddQuestion = () => {
-  const [question, setQuestion] = useState('');
-  const [options, setOptions] = useState(['', '', '', '']);
-  const [correctAnswer, setCorrectAnswer] = useState('');
-  const [error, setError] = useState('');
-  const [roles, setRoles] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
 
-
-  const parseJwt = (token) => {
+  // Token Parsing Function
+  const parseJwt = (token: string | null): { roles?: string[] } | null => {
+    if (!token) return null;
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -29,43 +30,33 @@ const AddQuestion = () => {
   };
 
   useEffect(() => {
-    try {
-      console.log("token:",token)
- 
-      if (token) {
-        const decoded = parseJwt(token); 
-        console.log("decoded:",decoded);
-        
-        setRoles(decoded?.roles || []); 
-      }
-    } catch (error) {
-      console.error('Error decoding token:', error);
+    if (token) {
+      const decoded = parseJwt(token);
+      setRoles(decoded?.roles || []);
     }
-  }, []);
+  }, [token]);
 
-  const handleOptionChange = (index, value) => {
+  const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
     newOptions[index] = value;
     setOptions(newOptions);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!roles.includes('admin')) {
-      console.log("Roles:",roles);
-      
       setError('Unauthorized access: Only admins can add questions.');
       return;
     }
 
-    if (options.some(option => option.trim() === '')) {
+    if (options.some((option) => option.trim() === '')) {
       setError('All options must be filled.');
       return;
     }
 
     setIsSubmitting(true);
-    setError('');
+    setError(null);
 
     const questionData = {
       question,
@@ -74,12 +65,11 @@ const AddQuestion = () => {
     };
 
     try {
-          
       const response = await fetch(`http://localhost:3001/questions/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization : `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(questionData),
       });
@@ -95,29 +85,33 @@ const AddQuestion = () => {
       setQuestion('');
       setOptions(['', '', '', '']);
       setCorrectAnswer('');
-    } catch (err) {
-      setError(err.message);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: 'auto' }}>
-      <h2>Add Question</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="container mx-auto max-w-xl p-8 mt-10 bg-gray-900 text-white rounded-lg shadow-lg border-2 border-red-500">
+      <h2 className="text-2xl font-bold text-red-500 mb-6 text-center">Add Question</h2>
+
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label>Question:</label>
+          <label className="block font-bold mb-2">Question:</label>
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             required
-            style={{ width: '100%' }}
+            className="w-full p-3 rounded-lg bg-gray-800 text-gray-200 border border-red-500"
+            placeholder="Enter the question"
           />
         </div>
+
         <div>
-          <label>Options:</label>
+          <label className="block font-bold mb-2">Options:</label>
           {options.map((option, index) => (
             <input
               key={index}
@@ -126,21 +120,30 @@ const AddQuestion = () => {
               onChange={(e) => handleOptionChange(index, e.target.value)}
               placeholder={`Option ${index + 1}`}
               required
-              style={{ width: '100%', marginBottom: '8px' }}
+              className="w-full p-3 rounded-lg bg-gray-800 text-gray-200 border border-red-500 mb-2"
             />
           ))}
         </div>
+
         <div>
-          <label>Correct Answer:</label>
+          <label className="block font-bold mb-2">Correct Answer:</label>
           <input
             type="text"
             value={correctAnswer}
             onChange={(e) => setCorrectAnswer(e.target.value)}
             required
-            style={{ width: '100%' }}
+            className="w-full p-3 rounded-lg bg-gray-800 text-gray-200 border border-red-500"
+            placeholder="Enter the correct answer"
           />
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ marginTop: '16px' }}>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`w-full py-3 font-bold rounded-lg ${
+            isSubmitting ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-600'
+          } text-white transition-colors`}
+        >
           {isSubmitting ? 'Submitting...' : 'Add Question'}
         </button>
       </form>

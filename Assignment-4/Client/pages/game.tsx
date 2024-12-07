@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
+import { Question, AnswerResponse } from '../interfaces/GameInterface';
 
-const Game = () => {
-  const [question, setQuestion] = useState('Loading question...');
-  const [options, setOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [currentQuestionId, setCurrentQuestionId] = useState(null);
-  const [timeRemaining, setTimeRemaining] = useState(30);
-  const [resultMessage, setResultMessage] = useState('');
-  const [playerScores, setPlayerScores] = useState([0, 0, 0]);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+const Game: React.FC = () => {
+  const [question, setQuestion] = useState < string > ('Loading question...');
+  const [options, setOptions] = useState < string[] > ([]);
+  const [selectedOption, setSelectedOption] = useState < string | null > (null);
+  const [currentQuestionId, setCurrentQuestionId] = useState < string | null > (null);
+  const [timeRemaining, setTimeRemaining] = useState < number > (30);
+  const [resultMessage, setResultMessage] = useState < string > ('');
+  const [playerScores, setPlayerScores] = useState < number[] > ([0, 0, 0]);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState < number > (0);
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
 
   useEffect(() => {
@@ -48,8 +49,7 @@ const Game = () => {
         throw new Error(`Error fetching question: ${response.statusText}`);
       }
 
-      const data = await response.json();
-
+      const data: Question = await response.json();
       setResultMessage('');
       setQuestion(data.question);
       setOptions(data.options);
@@ -60,12 +60,12 @@ const Game = () => {
     }
   };
 
-  const handleOptionSelect = (option) => {
+  const handleOptionSelect = (option: string) => {
     setSelectedOption(option);
     submitAnswer(option);
   };
 
-  const submitAnswer = async (option) => {
+  const submitAnswer = async (option?: string) => {
     if (!option || !currentQuestionId) {
       alert('Please select an option!');
       return;
@@ -84,7 +84,7 @@ const Game = () => {
         }),
       });
 
-      const data = await response.json();
+      const data: AnswerResponse = await response.json();
       setResultMessage(data.result === 'win' ? 'Correct! You win!' : 'Incorrect! Try again');
 
       if (data.result === 'win') {
@@ -101,7 +101,7 @@ const Game = () => {
     }
   };
 
-  const updatePlayerScore = (playerIndex, points) => {
+  const updatePlayerScore = (playerIndex: number, points: number) => {
     setPlayerScores((prevScores) => {
       const updatedScores = [...prevScores];
       updatedScores[playerIndex] += points;
@@ -117,11 +117,10 @@ const Game = () => {
           {options.map((option, index) => (
             <button
               key={index}
-              className={`option py-2 px-4 border-2 rounded-lg ${
-                selectedOption === option
+              className={`option py-2 px-4 border-2 rounded-lg ${selectedOption === option
                   ? 'bg-red-500 text-white border-red-600'
                   : 'bg-gray-800 text-gray-200 border-gray-600 hover:bg-red-700 hover:border-red-700'
-              }`}
+                }`}
               onClick={() => handleOptionSelect(option)}
             >
               {String.fromCharCode(65 + index)}) {option}
@@ -147,9 +146,8 @@ const Game = () => {
           ))}
         </div>
       </div>
-    <button>Quit Game</button>
+      <button>Quit Game</button>
     </div>
-
   );
 };
 

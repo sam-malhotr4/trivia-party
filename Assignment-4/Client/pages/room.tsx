@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../components/layout';
+import Layout from '../components/Layout';
 import Navbar from '../components/Navbar';
-
-const parseJwt = (token) => {
+import { DecodedToken } from '@/interfaces/RoomInterface';
+// Token Parsing Utility
+const parseJwt = (token: string): DecodedToken | null => {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -20,7 +21,7 @@ const parseJwt = (token) => {
 };
 
 export default function Room() {
-  const [roles, setRoles] = useState([]); // State for roles
+  const [roles, setRoles] = useState<string[]>([]); // State for roles
 
   useEffect(() => {
     try {
@@ -36,7 +37,8 @@ export default function Room() {
     } catch (error) {
       console.error('Error decoding token:', error);
     }
-  }, []); 
+  }, []);
+
   return (
     <>
       <div>
