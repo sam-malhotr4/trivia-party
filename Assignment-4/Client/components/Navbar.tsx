@@ -37,6 +37,7 @@ const Navbar: React.FC = () => {
               About
             </Link>
           </li>
+          
           {isLoggedIn ? (
             <li>
               <button
