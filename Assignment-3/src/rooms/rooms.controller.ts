@@ -3,6 +3,7 @@ import { RoomsService } from "./rooms.service";
 import { User } from '../users/user.schema'
 import { Player } from "./player.interface";
 import { Room } from "./rooms.model";
+import { LeaveRoomResponse } from "./rooms.service";
 
 @Controller('rooms') // this controller targets endpoints with /rooms in the path
 export class RoomsController {
@@ -42,19 +43,20 @@ export class RoomsController {
     }
 
     @Post('leave_room')
-    async leaveRoom(@Body() body: { username: string }) {
-        const { username } = body;
-        const room = await this.roomsService.leaveRoom(username);
+    // async leaveRoom(@Body() body: { username: string }) {
+    async leaveRoom(@Body('username') username: string): Promise<LeaveRoomResponse> {
+        return this.roomsService.leaveRoom(username);
+        // const room = await this.roomsService.leaveRoom(username);
 
-        if (!room) {
-            return { message: 'User not currently in any room' };
-        }
+        // if (!room) {
+        //     return { message: 'User not currently in any room' };
+        // }
 
-        return {
-            message: 'Left room successfully',
-            roomCode: room.roomCode,
-            players: room.players.map((player) => player.user.username),
-        };
+        // return {
+        //     message: 'Left room successfully',
+        //     roomCode: room.roomCode,
+        //     players: room.players.map((player) => player.user.username),
+        // };
     }
 
     @Get('get_players')
