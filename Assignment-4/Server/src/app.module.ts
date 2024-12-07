@@ -8,7 +8,7 @@ import { UserService } from './users/userService';
 import { User, UserSchema } from './users/user.schema';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthModule } from './auth/auth.module';
-import { GameGateway } from './gateway/game.gateway';
+
 
 @Module({
   imports: [  
@@ -20,7 +20,7 @@ import { GameGateway } from './gateway/game.gateway';
     
   ],
   controllers: [UserController],
-  providers: [UserService, GameGateway],
+  providers: [UserService],
   
 })
 export class AppModule {}
