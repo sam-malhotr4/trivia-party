@@ -8,12 +8,10 @@ import { UserService } from './users/userService';
 import { User, UserSchema } from './users/user.schema';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthModule } from './auth/auth.module';
-<<<<<<< HEAD
+
 import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
-=======
-import { GameGateway } from './gateway/game.gateway';
->>>>>>> d9e2f15 (added nextjs frontend)
+
 
 @Module({
   imports: [  
@@ -27,7 +25,7 @@ import { GameGateway } from './gateway/game.gateway';
     
   ],
   controllers: [UserController],
-  providers: [UserService, GameGateway],
+  providers: [UserService],
   
 })
 export class AppModule {}
