@@ -1,0 +1,7 @@
+{
+  "name": "trivia-app-ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
