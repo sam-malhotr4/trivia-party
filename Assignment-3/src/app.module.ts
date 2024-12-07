@@ -8,7 +8,8 @@ import { UserService } from './users/userService';
 import { User, UserSchema } from './users/user.schema';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthModule } from './auth/auth.module';
-
+import { UsersModule } from './users/users.module';
+import { RoomsModule } from './rooms/rooms.module';
 @Module({
   imports: [  
     MongooseModule.forRoot('mongodb://localhost:27017/trivia_party'),
@@ -21,7 +22,7 @@ import { AuthModule } from './auth/auth.module';
     
   ],
   controllers: [UserController],
-  providers: [UserService, GameGateway],
+  providers: [UserService],
   
 })
 export class AppModule {}
