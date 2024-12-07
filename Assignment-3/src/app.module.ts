@@ -8,16 +8,11 @@ import { UserService } from './users/userService';
 import { User, UserSchema } from './users/user.schema';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthModule } from './auth/auth.module';
-<<<<<<< HEAD
 
 import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
 
 
-=======
-import { UsersModule } from './users/users.module';
-import { RoomsModule } from './rooms/rooms.module';
->>>>>>> bbc284e (solved conflict error)
 @Module({
   imports: [  
     MongooseModule.forRoot('mongodb://localhost:27017/trivia_party'),
