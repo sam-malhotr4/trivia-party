@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import Navbar from '../components/Navbar';
 import { DecodedToken } from '@/interfaces/RoomInterface';
@@ -22,6 +23,27 @@ const parseJwt = (token: string): DecodedToken | null => {
 
 export default function Room() {
   const [roles, setRoles] = useState<string[]>([]); // State for roles
+  const [username, setUsername] = useState<string>(''); // Capture username from input
+  const router = useRouter(); // Next.js router instance
+
+  // Handle Create Room functionality
+  const handleCreateRoom = async () => {
+    try {
+      const response = await fetch('/rooms/create_room', { // Correct path
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }), // Pass the username dynamically if needed
+      });
+      if (response.ok) {
+        const { roomCode } = await response.json();
+        router.push(`/join_room?roomCode=${roomCode}`); // Navigate to lobby with room code
+      } else {
+        console.error('Failed to create room');
+      }
+    } catch (error) {
+      console.error('Error creating room:', error);
+    }
+  };
 
   useEffect(() => {
     try {
@@ -48,7 +70,7 @@ export default function Room() {
             <h1 className="text-3xl font-bold text-center mb-6 text-red-500">
               Join the Trivia-Party
             </h1>
-            <form action="/join-room" method="POST" className="space-y-4">
+            <form method="POST" className="space-y-4">
               <div>
                 <label
                   htmlFor="room-code"
@@ -70,7 +92,7 @@ export default function Room() {
                   htmlFor="player-name"
                   className="block text-sm font-bold mb-2 text-gray-200"
                 >
-                  Player Name
+                  Player Username
                 </label>
                 <input
                   type="text"
@@ -82,18 +104,20 @@ export default function Room() {
                 />
               </div>
               <button
-                type="submit"
+                type="button"
+                onClick={handleCreateRoom}
                 className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg"
               >
                 Join Room
               </button>
               <p className="message text-center mt-4">
-                <a
-                  href="/game"
+              <button
+                  type="button"
+                  onClick={handleCreateRoom}
                   className="text-orange-400 hover:text-orange-500 font-semibold"
                 >
                   Create Room
-                </a>
+                </button>
                 {roles.includes('admin') && (
                   <a
                     className="text-orange-400 hover:text-orange-500 font-semibold ml-4"
