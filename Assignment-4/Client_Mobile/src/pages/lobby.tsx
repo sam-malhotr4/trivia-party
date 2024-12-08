@@ -40,7 +40,7 @@ const Lobby: React.FC = () => {
     if (room) {
       setRoomCode(room);
 
-      const socketInstance = io('http://localhost:4000', {
+      const socketInstance = io('http://localhost:3001', {
         query: { roomCode: room },
       });
 

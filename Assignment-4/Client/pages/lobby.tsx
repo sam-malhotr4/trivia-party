@@ -31,7 +31,7 @@ export default function Lobby() {
     if (room) {
       setRoomCode(room as string);
 
-      const socketInstance = io('http://localhost:4000', {
+      const socketInstance = io('http://localhost:3001', {
         query: { roomCode: room },
       });
 
