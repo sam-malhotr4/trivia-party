@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import Navbar from '../components/Navbar';
 import { DecodedToken } from '@/interfaces/RoomInterface';
-
+// Token Parsing Utility
 const parseJwt = (token: string): DecodedToken | null => {
   try {
     const base64Url = token.split('.')[1];
@@ -23,54 +23,65 @@ const parseJwt = (token: string): DecodedToken | null => {
 
 const Room = () => {
   const [roles, setRoles] = useState<string[]>([]); // State for roles
-  const [username, setUsername] = useState<string>(''); // Capture username from input
-  const [roomCode, setRoomCode] = useState<string>(''); // State for room code
+  const [username, setUsername] = useState<string>(''); // Username of the player
+  const [roomCode, setRoomCode] = useState<string>(''); // Room code entered by the user
   const router = useRouter(); // Next.js router instance
 
   // Handle creating a room
   const handleCreateRoom = async () => {
+    if (!username) {
+      alert('Please enter a username before creating a room.'); // Validation
+      return;
+    }
+  
     try {
       const response = await fetch('http://localhost:3001/rooms/create_room', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }), 
       });
+  
       if (response.ok) {
-        const data = await response.json();
-        const { roomCode } = data;
-        console.log('Room created successfully:', data);
+        const { roomCode } = await response.json(); // Extract room code
 
-        // Redirect to the lobby page with the roomCode
-        router.push(`/lobby?roomCode=${roomCode}`);
+        router.push(`/lobby?room=${roomCode}`); // Navigate to lobby with roomCode
       } else {
-        const errorText = await response.text();
-        console.error('Failed to create room:', errorText);
+        const errorMessage = await response.text();
+        console.error('Failed to create room:', errorMessage);
+        alert('Failed to create room. Please try again.');
       }
     } catch (error) {
       console.error('Error creating room:', error);
+      alert('An error occurred while creating the room.');
     }
   };
 
-  // Handle joining a room
+  // Handle Join Room functionality
   const handleJoinRoom = async () => {
+    if (!roomCode || !username) {
+      alert('Please enter both a room code and username to join.');
+      return;
+    }
+  
     try {
       const response = await fetch('http://localhost:3001/rooms/join_room', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomCode, username }), // Pass the roomCode and username
+        body: JSON.stringify({ roomCode, username }), // Pass roomCode and username
       });
+  
       if (response.ok) {
         const data = await response.json();
         console.log('Joined room successfully:', data);
-
-        
-        router.push(`/lobby?roomCode=${roomCode}`);
+        router.push(`/lobby?room=${roomCode}`); // Navigate to lobby with roomCode
       } else {
-        const errorText = await response.text();
-        console.error('Failed to join room:', errorText);
+        const errorMessage = await response.text();
+        console.error('Failed to join room:', errorMessage);
+        alert('Failed to join room. Please check the room code and try again.');
       }
     } catch (error) {
       console.error('Error joining room:', error);
+      alert('An error occurred while joining the room.');
     }
   };
 
@@ -95,7 +106,11 @@ const Room = () => {
             <h1 className="text-3xl font-bold text-center mb-6 text-red-500">
               Join the Trivia-Party
             </h1>
-            <form method="POST" className="space-y-4">
+            <form onSubmit={(e) => {
+                  e.preventDefault(); // Prevent default page refresh
+                  handleJoinRoom(); // Call the join room function
+                }} 
+              className="space-y-4">
               <div>
                 <label
                   htmlFor="room-code"
@@ -132,32 +147,30 @@ const Room = () => {
                   className="w-full p-3 border border-red-500 rounded-lg bg-gray-800 text-gray-200"
                 />
               </div>
-              <div className="flex justify-between">
-                <button
-                  type="button"
-                  onClick={handleJoinRoom}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg"
-                >
-                  Join Room
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCreateRoom}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg"
-                >
-                  Create Room
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleJoinRoom}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg"
+              >
+                Join Room
+              </button>
               <p className="message text-center mt-4">
-                {roles.includes('admin') && (
-                  <a
-                    className="text-orange-400 hover:text-orange-500 font-semibold ml-4"
-                    href="/addquestion"
-                  >
-                    Add question
-                  </a>
-                )}
-              </p>
+              <button
+                type="button"
+                onClick={handleCreateRoom}
+                className="text-orange-400 hover:text-orange-500 font-semibold"
+              >
+                Create Room
+              </button>
+              {roles.includes('admin') && (
+                <a
+                  className="text-orange-400 hover:text-orange-500 font-semibold ml-4"
+                  href="/addquestion"
+                >
+                  Add question
+                </a>
+              )}
+            </p>
             </form>
           </div>
         </div>
@@ -166,5 +179,3 @@ const Room = () => {
     </>
   );
 }
-
-export default Room;
