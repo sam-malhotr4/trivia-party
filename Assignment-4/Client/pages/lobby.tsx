@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 interface Player {
   id: string;
-  name: string;
+  username: string;
   isHost: boolean;
 }
 
@@ -15,10 +15,16 @@ export default function Lobby() {
   const [roomCode, setRoomCode] = useState<string>('');
   const [players, setPlayers] = useState<Player[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [message, setMessage] = useState<string>('Waiting for players to join...');
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>('Waiting for players to join...');
 
-  // Initialize WebSocket connection
+  // Generate random color for player icons
+  const getRandomColor = () => {
+    const colors = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-purple-500'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  // Initialize WebSocket connection and get current user
   useEffect(() => {
     const { room } = router.query;
 
@@ -31,10 +37,12 @@ export default function Lobby() {
 
       const socketInstance = io('http://localhost:3001', {
         query: { roomCode: room },
+        transports: ['websocket'],
       });
 
       socketInstance.on('connect', () => {
         console.log('Connected to WebSocket');
+        socketInstance.emit('joinRoom', { roomCode, username });
       });
 
       socketInstance.on('playerUpdate', (updatedPlayers: Player[]) => {
@@ -47,11 +55,15 @@ export default function Lobby() {
       });
 
       socketInstance.on('playerJoined', (player: Player) => {
-        toast.success(`${player.name} joined the room!`);
+        toast.success(`${player.username} joined the room!`);
       });
 
       socketInstance.on('playerLeft', (player: Player) => {
-        toast.error(`${player.name} left the room.`);
+        toast.error(`${player.username} left the room.`);
+      });
+
+      socketInstance.on('startGame', () => {
+        router.push('/game'); // Redirect to the game page
       });
 
       setSocket(socketInstance);
@@ -91,8 +103,14 @@ export default function Lobby() {
     }
   };
 
+  // Handle starting the game
+  const startGame = () => {
+    if (socket) {
+      socket.emit('startGame', { roomCode });
+    }
+  };
+
   return (
-    
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-center w-full max-w-xl">
@@ -113,21 +131,26 @@ export default function Lobby() {
                 No players joined yet.
               </motion.p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="flex flex-wrap justify-center gap-4">
                 {players.map((player) => (
                   <motion.li
                     key={player.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="p-2 bg-gray-600 rounded text-gray-200 relative"
+                    className="flex flex-col items-center"
                   >
-                  {player.isHost && (
-                    <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                      Host
-                    </span>
+                    <div
+                      className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-lg font-bold ${getRandomColor()}`}
+                    >
+                      {player.username[0]?.toUpperCase() || '?'}
+                    </div>
+                    {player.isHost && (
+                      <span className="absolute -top-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        Host
+                      </span>
                     )}
-                    {player.name}
+                    <p className="text-gray-300 text-sm mt-2">{player.username || 'Unknown'}</p>
                   </motion.li>
                 ))}
               </ul>
@@ -135,6 +158,14 @@ export default function Lobby() {
           </AnimatePresence>
         </div>
         <p className="text-gray-300 mb-4">{message}</p>
+        {players.find((player) => player.username === currentUser && player.isHost) && (
+          <button
+            onClick={startGame}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md mb-4"
+          >
+            Start Game
+          </button>
+        )}
         <button
           onClick={leaveRoom}
           className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md"
