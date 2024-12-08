@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { CustomIoAdapter } from './adapters/websocket.adapter';
 
 async function bootstrap() {
   // Specify the application type as NestExpressApplication
@@ -13,6 +14,8 @@ async function bootstrap() {
     methods: 'GET,POST,PUT,DELETE',
     credentials: true,
   });
+
+  app.useWebSocketAdapter(new CustomIoAdapter(app));
 
   // Serve static files (HTML, CSS, JS) from the 'public' directory
   app.useStaticAssets(join(__dirname, '..', 'public'));
