@@ -7,6 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 interface Player {
   id: string;
   name: string;
+  isHost: boolean;
 }
 
 export default function Lobby() {
@@ -15,14 +16,7 @@ export default function Lobby() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [message, setMessage] = useState<string>('Waiting for players to join...');
-
-  // Error boundary - Catch errors during render
-  if (typeof window !== "undefined" && window.onerror) {
-    window.onerror = function (msg, url, lineNo, columnNo, error) {
-      console.error('Error caught:', error);
-      toast.error("Something went wrong.");
-    };
-  }
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -30,6 +24,10 @@ export default function Lobby() {
 
     if (room) {
       setRoomCode(room as string);
+
+      const token = localStorage.getItem('authToken');
+      const username = token ? JSON.parse(atob(token.split('.')[1]))?.username : null;
+      setCurrentUser(username);
 
       const socketInstance = io('http://localhost:3001', {
         query: { roomCode: room },
@@ -66,22 +64,30 @@ export default function Lobby() {
 
   // Handle leaving the room
   const leaveRoom = async () => {
-    try {
-      if (socket) {
-        socket.emit('leaveRoom', { roomCode });
-      }
+    if (!currentUser) {
+      toast.error('You are not logged in.');
+      return;
+    }
 
-      const response = await fetch(`/api/leave_room`, {
+    try {
+      const response = await fetch('http://localhost:3001/rooms/leave_room', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomCode }),
+        body: JSON.stringify({ username: currentUser }),
       });
 
       if (response.ok) {
+        const { message } = await response.json();
+        toast.success(message);
         router.push('/room'); // Redirect to the room creation page
+      } else {
+        const errorMessage = await response.text();
+        console.error('Failed to leave room:', errorMessage);
+        toast.error('Failed to leave room.');
       }
     } catch (error) {
       console.error('Error leaving room:', error);
+      toast.error('An error occurred while leaving the room.');
     }
   };
 
@@ -99,6 +105,7 @@ export default function Lobby() {
           <AnimatePresence>
             {players.length === 0 ? (
               <motion.p
+                initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-gray-400"
@@ -113,8 +120,13 @@ export default function Lobby() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="p-2 bg-gray-600 rounded text-gray-200"
+                    className="p-2 bg-gray-600 rounded text-gray-200 relative"
                   >
+                  {player.isHost && (
+                    <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                      Host
+                    </span>
+                    )}
                     {player.name}
                   </motion.li>
                 ))}
