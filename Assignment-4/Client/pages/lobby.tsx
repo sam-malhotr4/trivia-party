@@ -56,6 +56,7 @@ export default function Lobby() {
       });
 
       socketInstance.on('playerLeft', (player: Player) => {
+        setPlayers((prevPlayers) => prevPlayers.filter((p) => p.id !== player.id));
         toast.error(`${player.username} left the room.`);
       });
 
@@ -85,12 +86,15 @@ export default function Lobby() {
       });
 
       if (response.ok) {
-        toast.success('Left the room successfully');
-        router.push('/room');
+        const { message, players: updatedPlayers } = await response.json();
+        toast.success(message);
+        setPlayers(updatedPlayers); // Update the lobby dynamically
+        router.push('/room'); // Redirect to the room creation page
       } else {
-        toast.error('Failed to leave room.');
+        toast.error('Failed to leave the room.');
       }
-    } catch {
+    } catch (error) {
+      console.error('Error leaving room:', error);
       toast.error('An error occurred while leaving the room.');
     }
   };
