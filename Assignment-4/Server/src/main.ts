@@ -8,7 +8,11 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Enable CORS for cross-origin requests
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000', // Allow requests from the frontend
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true,
+  });
 
   // Serve static files (HTML, CSS, JS) from the 'public' directory
   app.useStaticAssets(join(__dirname, '..', 'public'));
