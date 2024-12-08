@@ -86,6 +86,7 @@ export default function Lobby() {
   };
 
   return (
+    
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-center w-full max-w-xl">
