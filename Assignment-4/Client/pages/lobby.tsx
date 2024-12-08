@@ -18,13 +18,11 @@ export default function Lobby() {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('Waiting for players to join...');
 
-  // Generate random color for player icons
   const getRandomColor = () => {
     const colors = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-purple-500'];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
-  // Initialize WebSocket connection and get current user
   useEffect(() => {
     const { room } = router.query;
 
@@ -41,17 +39,16 @@ export default function Lobby() {
       });
 
       socketInstance.on('connect', () => {
-        console.log('Connected to WebSocket');
         socketInstance.emit('joinRoom', { roomCode, username });
       });
 
       socketInstance.on('playerUpdate', (updatedPlayers: Player[]) => {
         setPlayers(updatedPlayers);
-        if (updatedPlayers.length >= 2) {
-          setMessage('Waiting to start the game.');
-        } else {
-          setMessage('Waiting for players to join...');
-        }
+        setMessage(
+          updatedPlayers.length >= 2
+            ? 'Waiting to start the game.'
+            : 'Waiting for players to join...'
+        );
       });
 
       socketInstance.on('playerJoined', (player: Player) => {
@@ -63,7 +60,7 @@ export default function Lobby() {
       });
 
       socketInstance.on('startGame', () => {
-        router.push('/game'); // Redirect to the game page
+        router.push('/game');
       });
 
       setSocket(socketInstance);
@@ -74,7 +71,6 @@ export default function Lobby() {
     }
   }, [router.query]);
 
-  // Handle leaving the room
   const leaveRoom = async () => {
     if (!currentUser) {
       toast.error('You are not logged in.');
@@ -89,21 +85,16 @@ export default function Lobby() {
       });
 
       if (response.ok) {
-        const { message } = await response.json();
-        toast.success(message);
-        router.push('/room'); // Redirect to the room creation page
+        toast.success('Left the room successfully');
+        router.push('/room');
       } else {
-        const errorMessage = await response.text();
-        console.error('Failed to leave room:', errorMessage);
         toast.error('Failed to leave room.');
       }
-    } catch (error) {
-      console.error('Error leaving room:', error);
+    } catch {
       toast.error('An error occurred while leaving the room.');
     }
   };
 
-  // Handle starting the game
   const startGame = () => {
     if (socket) {
       socket.emit('startGame', { roomCode });
@@ -138,7 +129,7 @@ export default function Lobby() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="flex flex-col items-center"
+                    className="flex flex-col items-center relative"
                   >
                     <div
                       className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-lg font-bold ${getRandomColor()}`}
