@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 
 import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
+import { GameGateway } from './game.gateway';
 
 @Module({
   imports: [  
@@ -23,7 +24,7 @@ import { UsersModule } from './users/users.module';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, GameGateway],
   
 })
 export class AppModule {}

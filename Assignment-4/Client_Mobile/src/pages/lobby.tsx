@@ -80,7 +80,7 @@ const Lobby: React.FC = () => {
         socket.emit('leaveRoom', { roomCode });
       }
 
-      const response = await fetch(`/api/leave_room`, {
+      const response = await fetch(`http://localhost:3001/leave_room`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ roomCode }),

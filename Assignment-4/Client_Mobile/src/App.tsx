@@ -18,7 +18,7 @@ import '@ionic/react/css/palettes/dark.system.css';
 import Register from './pages/register';
 import Game from './pages/game';
 import Room from './pages/room';
-import './tailwind.css'
+
 import Lobby from './pages/lobby';
 setupIonicReact();
 
