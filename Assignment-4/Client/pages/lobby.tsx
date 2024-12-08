@@ -16,6 +16,14 @@ export default function Lobby() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [message, setMessage] = useState<string>('Waiting for players to join...');
 
+  // Error boundary - Catch errors during render
+  if (typeof window !== "undefined" && window.onerror) {
+    window.onerror = function (msg, url, lineNo, columnNo, error) {
+      console.error('Error caught:', error);
+      toast.error("Something went wrong.");
+    };
+  }
+
   // Initialize WebSocket connection
   useEffect(() => {
     const { room } = router.query;
@@ -90,7 +98,6 @@ export default function Lobby() {
           <AnimatePresence>
             {players.length === 0 ? (
               <motion.p
-
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-gray-400"

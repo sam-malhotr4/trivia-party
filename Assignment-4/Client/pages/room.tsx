@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // Ensure React and hooks are imported
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import Navbar from '../components/Navbar';
 import { DecodedToken } from '@/interfaces/RoomInterface';
-// Token Parsing Utility
+
 const parseJwt = (token: string): DecodedToken | null => {
   try {
     const base64Url = token.split('.')[1];
@@ -21,39 +21,64 @@ const parseJwt = (token: string): DecodedToken | null => {
   }
 };
 
-export default function Room() {
+const Room = () => {
   const [roles, setRoles] = useState<string[]>([]); // State for roles
   const [username, setUsername] = useState<string>(''); // Capture username from input
+  const [roomCode, setRoomCode] = useState<string>(''); // State for room code
   const router = useRouter(); // Next.js router instance
 
-  // Handle Create Room functionality
+  // Handle creating a room
   const handleCreateRoom = async () => {
     try {
-      const response = await fetch('/rooms/create_room', { // Correct path
+      const response = await fetch('http://localhost:3001/rooms/create_room', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }), // Pass the username dynamically if needed
+        body: JSON.stringify({ username }), 
       });
       if (response.ok) {
-        const { roomCode } = await response.json();
-        router.push(`/join_room?roomCode=${roomCode}`); // Navigate to lobby with room code
+        const data = await response.json();
+        const { roomCode } = data;
+        console.log('Room created successfully:', data);
+
+        // Redirect to the lobby page with the roomCode
+        router.push(`/lobby?roomCode=${roomCode}`);
       } else {
-        console.error('Failed to create room');
+        const errorText = await response.text();
+        console.error('Failed to create room:', errorText);
       }
     } catch (error) {
       console.error('Error creating room:', error);
     }
   };
 
+  // Handle joining a room
+  const handleJoinRoom = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/rooms/join_room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomCode, username }), // Pass the roomCode and username
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Joined room successfully:', data);
+
+        
+        router.push(`/lobby?roomCode=${roomCode}`);
+      } else {
+        const errorText = await response.text();
+        console.error('Failed to join room:', errorText);
+      }
+    } catch (error) {
+      console.error('Error joining room:', error);
+    }
+  };
+
   useEffect(() => {
     try {
       const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
-      console.log('Token:', token);
-
       if (token) {
         const decoded = parseJwt(token); // Decode the token
-        console.log('Decoded Token:', decoded);
-
         setRoles(decoded?.roles || []); // Set roles from the token payload
       }
     } catch (error) {
@@ -83,6 +108,8 @@ export default function Room() {
                   id="room-code"
                   name="roomCode"
                   placeholder="Enter room code"
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value)} // Update roomCode state
                   required
                   className="w-full p-3 border border-red-500 rounded-lg bg-gray-800 text-gray-200"
                 />
@@ -99,25 +126,29 @@ export default function Room() {
                   id="player-name"
                   name="playerName"
                   placeholder="Enter your sinister alias"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)} // Updating state
                   required
                   className="w-full p-3 border border-red-500 rounded-lg bg-gray-800 text-gray-200"
                 />
               </div>
-              <button
-                type="button"
-                onClick={handleCreateRoom}
-                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg"
-              >
-                Join Room
-              </button>
-              <p className="message text-center mt-4">
-              <button
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={handleJoinRoom}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg"
+                >
+                  Join Room
+                </button>
+                <button
                   type="button"
                   onClick={handleCreateRoom}
-                  className="text-orange-400 hover:text-orange-500 font-semibold"
+                  className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg"
                 >
                   Create Room
                 </button>
+              </div>
+              <p className="message text-center mt-4">
                 {roles.includes('admin') && (
                   <a
                     className="text-orange-400 hover:text-orange-500 font-semibold ml-4"
@@ -135,3 +166,5 @@ export default function Room() {
     </>
   );
 }
+
+export default Room;
