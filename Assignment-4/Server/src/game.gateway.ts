@@ -3,9 +3,9 @@ import {
   WebSocketServer,
   SubscribeMessage,
   MessageBody,
+  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
@@ -13,13 +13,14 @@ interface Player {
   id: string;
   username: string;
   isHost: boolean;
+  score: number;
 }
 
 interface Room {
   players: Player[];
 }
 
-@WebSocketGateway({ cors: { origin: 'http://localhost:3000' } }) // Enable CORS for WebSocket
+@WebSocketGateway({ cors: { origin: 'http://localhost:3000' } })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
@@ -36,14 +37,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const playerIndex = room.players.findIndex((player) => player.id === client.id);
       if (playerIndex !== -1) {
         const [removedPlayer] = room.players.splice(playerIndex, 1);
-
-        this.server.to(roomCode).emit('playerLeft', { id: client.id, name: removedPlayer.username });
+        this.server.to(roomCode).emit('playerLeft', { id: client.id, username: removedPlayer.username });
 
         if (room.players.length === 0) {
           this.rooms.delete(roomCode);
           console.log(`Room ${roomCode} deleted`);
         } else if (removedPlayer.isHost) {
-          room.players[0].isHost = true;
+          room.players[0].isHost = true; // Promote the next player as the host
           this.server.to(roomCode).emit('playerUpdate', room.players);
         }
         break;
@@ -63,8 +63,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     const room = this.rooms.get(roomCode);
-
-    const newPlayer: Player = { id: client.id, username, isHost: room.players.length === 0 };
+    const newPlayer: Player = { id: client.id, username, isHost: room.players.length === 0, score: 0 };
     room.players.push(newPlayer);
 
     client.join(roomCode);
@@ -89,7 +88,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (playerIndex !== -1) {
         const [removedPlayer] = room.players.splice(playerIndex, 1);
 
-        this.server.to(roomCode).emit('playerLeft', { id: client.id, name: username });
+        this.server.to(roomCode).emit('playerLeft', { id: client.id, username });
 
         if (room.players.length === 0) {
           this.rooms.delete(roomCode);
@@ -105,13 +104,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('startGame')
-handleStartGame(@MessageBody() data: { roomCode: string }) {
-  const { roomCode } = data;
+  handleStartGame(@MessageBody() data: { roomCode: string }) {
+    const { roomCode } = data;
 
-  const room = this.rooms.get(roomCode);
-  if (room) {
-    this.server.to(roomCode).emit('startGame', {});
-    console.log(`Game started in room ${roomCode}`);
+    const room = this.rooms.get(roomCode);
+    if (room) {
+      this.server.to(roomCode).emit('startGame', {});
+      console.log(`Game started in room ${roomCode}`);
+    }
   }
-}
 }
